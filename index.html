@@ -260,6 +260,19 @@
             </article>
             <article class="component-card">
               <div class="concept-copy">
+                <h3>Return path</h3>
+                <p>Current always has to come back to where it started. A signal goes out along the trace and returns through GND, usually right under the trace on the ground plane. A big loop acts like an antenna and picks up or radiates noise, so keep loops small and don't route over gaps in the plane.</p>
+                <p><strong>This is why decoupling capacitors go right next to the power input pins:</strong> it keeps the ground loop between the cap and the IC as small as possible.</p>
+              </div>
+              <div class="concept-media">
+                <div class="video-embed video-embed-wide">
+                  <iframe src="https://www.youtube.com/embed/7OoODwOy4Mg" title="Return paths explained" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                </div>
+                <p class="video-embed-link"><a href="https://www.youtube.com/watch?v=7OoODwOy4Mg" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></p>
+              </div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
                 <h3>ERC &amp; DRC</h3>
                 <p><strong>ERC</strong> (Electrical Rules Check) runs on the schematic: unconnected pins, missing power flags, conflicting drivers. <strong>DRC</strong> (Design Rules Check) runs on the PCB: clearances, unconnected copper, via and trace sizes. Neither one proves the circuit is correct.</p>
               </div>
