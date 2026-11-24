@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111111">
+  <meta name="description" content="NYU Formula SAE Electronics: hands-on KiCad onboarding, PCB design, SMD assembly and bring-up.">
+  <title>PCB Learning | NYU FSAE Electronics</title>
+  <link rel="icon" type="image/png" sizes="256x256" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to course</a>
+  <button class="sidebar-expand" id="sidebarExpand" type="button" aria-label="Expand sidebar" title="Expand sidebar">☰</button>
+  <div class="site-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Course navigation">
+      <div class="brand">
+        <button class="sidebar-collapse" id="sidebarCollapse" type="button" aria-label="Collapse sidebar" title="Collapse sidebar">«</button>
+        <div><strong>NYU FSAE Electronics</strong><span class="brand-caption">PCB Learning</span></div>
+      </div>
+      <nav class="side-nav" aria-label="Contents">
+        <a href="#welcome" class="nav-link active">Overview</a>
+        <div class="nav-label">01 / LEARN</div>
+        <a href="#basics" class="nav-link"><span class="nav-icon">1.0</span> PCB basics</a>
+        <a href="#components" class="nav-link"><span class="nav-icon">1.1</span> Basic components</a>
+        <a href="#concepts" class="nav-link"><span class="nav-icon">1.2</span> Core concepts</a>
+        <a href="#foundations" class="nav-link"><span class="nav-icon">1.3</span> KiCad fundamentals</a>
+        <a href="#quiz" class="nav-link"><span class="nav-icon">1.4</span> Knowledge check</a>
+        <div class="nav-label">02 / DESIGN</div>
+        <a href="#architecture" class="nav-link"><span class="nav-icon">2.0</span> Overview</a>
+        <a href="#blocks" class="nav-link"><span class="nav-icon">2.1</span> Circuit blocks</a>
+        <a href="#setup" class="nav-link"><span class="nav-icon">2.2</span> Setup</a>
+        <a href="#cmdline" class="nav-link"><span class="nav-icon">2.3</span> Team Git workflow</a>
+        <a href="#schematic" class="nav-link"><span class="nav-icon">2.4</span> Schematic</a>
+        <a href="#placement" class="nav-link"><span class="nav-icon">2.5</span> Placement</a>
+        <a href="#routing" class="nav-link"><span class="nav-icon">2.6</span> Routing</a>
+        <a href="#fabrication" class="nav-link"><span class="nav-icon">2.7</span> Finalize & fab</a>
+        <div class="nav-label">03 / ASSEMBLE</div>
+        <a href="#assembly" class="nav-link"><span class="nav-icon">3</span> Assembly</a>
+        <div class="nav-label">04 / BRING UP</div>
+        <a href="#bringup" class="nav-link"><span class="nav-icon">4</span> Bring-up</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-progress"><div class="progress-label"><span>Your checklist</span><strong id="progressNumber">0%</strong></div><div class="progress-track"><div class="progress-fill" id="progressBar"></div></div><small id="progressDescription">Saved in this browser</small></div>
+      </div>
+    </aside>
+    <div class="mobile-top"><button id="menuToggle" aria-label="Toggle course navigation" aria-expanded="false">☰</button><span>PCB Learning</span></div>
+    <main id="main">
+      <section id="welcome" class="hero section" data-section>
+        <h1>PCB Learning</h1>
+      </section>
+      <div class="content">
+        <div class="intro-callout"><span class="mini-label">COURSE OVERVIEW</span><p>This course covers the tools, common components, review process, and PCB conventions our team uses. You'll design a board, have it reviewed in stages, then assemble and test it once it's fabricated. If you go on to work on embedded software, this board becomes your platform for developing and testing firmware and sensors.</p></div>
+        <div class="timeline" aria-label="Course timeline">
+          <div class="timeline-item"><span class="date">NOV 28</span><strong>Start</strong></div>
+          <div class="timeline-item"><span class="date">DEC 05</span><strong>Part 1 & 2.0–2.2 due</strong></div>
+          <div class="timeline-item muted"><span class="date">DEC 06–27</span><strong>Finals / break</strong></div>
+          <div class="timeline-item"><span class="date">~DEC 28–JAN 22</span><strong>Design sprint</strong></div>
+          <div class="timeline-item finale"><span class="date">JAN 23</span><strong>Team review</strong></div>
+        </div>
+        <aside class="authors-note" aria-label="Author's note">
+          <span class="authors-note-label">Author's note</span>
+          <p>I've designed about a dozen PCBs over the past four years, and with every board the development time dropped as I learned better tools, practices, and shortcuts. The workflow and tools in this course come from several thousand hours of that practice, and I hope this course helps you learn them significantly faster than I did. Electrical theory is useful but slow and difficult to internalize without building practical applications. I barely knew what a capacitor was when I built my first board. PCB design is mostly about following rules, conventions, datasheets, and reference designs. You'll learn the theory over time but the most important thing for now is just to learn the tools and start building.</p>
+          <p class="authors-note-sig">– Veikko Kurki &middot; November 24, 2026</p>
+        </aside>
+                <h3 class="ai-note-title">Note on AI use</h3>
+        <p>AI can be really helpful in explaining confusing topics, although personally I prefer video illustrations, which is why so many are linked here. When you turn to AI for help with a concept, it helps to say "explain in plain terms" to get a more intuitive explanation. For problems with KiCad or GitHub, AI can again be helpful in explaining what to do, but don't let Claude Code, Cursor or any other tool run CLI commands for you or interface with KiCad (they're also not very good at the latter yet). You <em>need</em> to learn these tools by heart and use them fluently without AI to pass technical interviews, do well at internships, and have a long-term position in this team.</p>
+        <div class="part-label" id="basics"><span class="part-index">PART 01</span><span>LEARN</span><span class="part-duration">~2–3 HOURS</span></div>
+        <section class="section article" data-section>
+          <div class="section-heading"><h2><span class="num">1.0</span>PCB basics</h2></div>
+          <div class="video-embed video-embed-wide">
+            <iframe src="https://www.youtube.com/embed/YJr-kHy6STg?start=230" title="What is a PCB?" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          </div>
+          <p class="video-embed-link"><a href="https://www.youtube.com/watch?v=YJr-kHy6STg&amp;t=230s" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></p>
+        </section>
+        <section id="components" class="section article" data-section>
+          <div class="section-heading"><h2><span class="num">1.1</span>Basic components</h2></div>
+          <div class="component-grid">
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Resistor</h3>
+                <p>Limits current and sets voltage dividers. Resistance is measured in ohms (Ω). On schematics you’ll often see values like <strong>10k</strong> (10 kilo-ohms) with the unit left off.</p>
+              </div>
+              <div class="concept-media">
+                <div class="video-embed">
+                  <iframe src="https://www.youtube.com/embed/ifY-NyL2Jmc" title="What is a resistor" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                </div>
+                <p class="video-embed-link"><a href="https://www.youtube.com/shorts/ifY-NyL2Jmc" target="_blank" rel="noopener noreferrer">Watch Short ↗</a></p>
+              </div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Capacitor</h3>
+                <p>Stores charge between two plates. Used for decoupling, filtering, and timing. Capacitance is measured in farads, and on boards you’ll mostly see µF, nF, or pF.</p>
+              </div>
+              <div class="concept-media">
+                <div class="video-embed">
+                  <iframe src="https://www.youtube.com/embed/7UfiI9Jcdi8" title="What is a capacitor" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                </div>
+                <p class="video-embed-link"><a href="https://www.youtube.com/shorts/7UfiI9Jcdi8" target="_blank" rel="noopener noreferrer">Watch Short ↗</a></p>
+              </div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>MOSFET</h3>
+                <p>A voltage-controlled switch. A gate voltage turns the drain–source path on or off with almost no gate current. This is what this team primarily uses for load switching and drivers.</p>
+              </div>
+              <div class="concept-media">
+                <div class="video-embed">
+                  <iframe src="https://www.youtube.com/embed/bxeiR6ZxbqU" title="What is a MOSFET" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                </div>
+                <p class="video-embed-link"><a href="https://www.youtube.com/shorts/bxeiR6ZxbqU" target="_blank" rel="noopener noreferrer">Watch Short ↗</a></p>
+              </div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Inductor</h3>
+                <p>A coil that stores energy in a magnetic field and resists sudden current changes. Common in switching regulators, filters, and RF circuits.</p>
+              </div>
+              <div class="concept-media">
+                <div class="video-embed">
+                  <iframe src="https://www.youtube.com/embed/1jUyQiL9jUY" title="What is an inductor" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                </div>
+                <p class="video-embed-link"><a href="https://www.youtube.com/shorts/1jUyQiL9jUY" target="_blank" rel="noopener noreferrer">Watch Short ↗</a></p>
+              </div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Diode</h3>
+                <p>Lets current flow mainly in one direction (anode → cathode). Used for polarity protection, rectification, and ESD clamps. LEDs are diodes that emit light.</p>
+              </div>
+              <div class="concept-media">
+                <div class="video-embed">
+                  <iframe src="https://www.youtube.com/embed/sD1zOkWCFMQ" title="What is a diode" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                </div>
+                <p class="video-embed-link"><a href="https://www.youtube.com/shorts/sD1zOkWCFMQ" target="_blank" rel="noopener noreferrer">Watch Short ↗</a></p>
+              </div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Integrated circuit (IC)</h3>
+                <p>Dive into what makes ICs the heart of modern technology. An integrated circuit is a tiny electronic device that combines multiple components, in various sizes, onto one chip for decision-making and signal-processing tasks.</p>
+              </div>
+              <div class="concept-media">
+                <div class="video-embed video-embed-wide">
+                  <iframe src="https://www.youtube.com/embed/rAYw43BqN6M" title="Integrated circuits explained" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                </div>
+                <p class="video-embed-link"><a href="https://www.youtube.com/watch?v=rAYw43BqN6M" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></p>
+              </div>
+            </article>
+          </div>
+          <h3 class="rules-title">Passive vs active components</h3>
+          <p>You will hear both of these terms mentioned a lot when you work on PCBs. <strong>Passive</strong> components, such as resistors, capacitors and inductors, can’t amplify a signal or control current flow on their own. They store, release or dissipate energy and don’t need a separate power source to do their job. <strong>Active</strong> components, such as MOSFETs and ICs, need power to operate and can switch, amplify or otherwise control the flow of current and signals. Most circuits, including ours, combine both.</p>
+        
+        </section>
+        <section id="concepts" class="section article" data-section>
+          <div class="section-heading"><h2><span class="num">1.2</span>Core PCB concepts</h2></div>
+          <div class="component-grid">
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Schematic</h3>
+                <p>A schematic shows <strong>electrical connections</strong>, meaning which pins connect to which nets. It is a circuit document, not a picture of the finished board.</p>
+              </div>
+              <figure class="concept-figure">
+                <img src="assets/proteus-schematic.png" alt="Proteus 1.0 schematic overview" loading="lazy">
+                <figcaption>Proteus 1.0 schematic (season 26–27, vehicle control unit and data acquisition unit)</figcaption>
+              </figure>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Nets</h3>
+                <p>A net is a named electrical node. Every pin with the same net label is connected, even if no wire is drawn between them. Power symbols like <strong>3V3</strong> and <strong>GND</strong> are nets too.</p>
+              </div>
+              <figure class="concept-figure">
+                <img src="assets/nets.png" alt="Schematic net labels: BOOT, GND, +3V3, NRST connecting MCU pins to boot and reset buttons" loading="lazy">
+                <figcaption>Same net name = same connection (BOOT, GND, +3V3, NRST)</figcaption>
+              </figure>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Placement</h3>
+                <p>Placement is arranging footprints on the board outline (where each part sits) before the copper connections are drawn. In industry, “layout” often means the whole physical design; on this team we usually mean placement when we say the parts are laid out.</p>
+              </div>
+              <figure class="concept-figure">
+                <img src="assets/proteus-layout.png" alt="Proteus 1.0 component placement" loading="lazy">
+                <figcaption>Proteus 1.0 placement</figcaption>
+              </figure>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Routing</h3>
+                <p>Routing is drawing the copper that connects those parts: traces on each layer and vias between layers. A fully routed board shows the electrical connections in copper, not just the footprints.</p>
+              </div>
+              <figure class="concept-figure">
+                <img src="assets/proteus-routing.png" alt="Proteus 1.0 routed PCB with traces and vias" loading="lazy">
+                <figcaption>Proteus 1.0 routing</figcaption>
+              </figure>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Symbol</h3>
+                <p>A symbol describes the function and pins of a part in the schematic. It does not define the physical pads. Symbols are numbered. Here <strong>R2</strong> is a 10 kilo-ohm resistor. The unit is often left out, so you see <strong>10k</strong> instead of 10 kΩ.</p>
+              </div>
+              <figure class="concept-figure">
+                <img src="assets/symbol-resistor.png" alt="Resistor schematic symbol R2 10k" loading="lazy">
+                <figcaption>Resistor symbol (R2, 10k)</figcaption>
+              </figure>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Footprint</h3>
+                <p>A footprint maps those pins to physical pads on the board. A correct symbol with a wrong footprint can ruin an otherwise good design.</p>
+              </div>
+              <figure class="concept-figure concept-figure-sm">
+                <img src="assets/footprint-resistor.png" alt="Resistor footprint R2 with pads and courtyard" loading="lazy">
+                <figcaption>Resistor footprint (R2)</figcaption>
+              </figure>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>SMD vs through-hole</h3>
+                <p><strong>Surface-mount (SMD)</strong> parts sit on pads on the board surface and are soldered there, so they take no holes and can all go on one side. <strong>Through-hole (TH)</strong> parts have leads that go through plated holes and are soldered on the opposite side. Most parts on our boards are SMD; larger, mechanically stressed parts like connectors are often through-hole.</p>
+              </div>
+              <figure class="concept-figure">
+                <img src="assets/smd-vs-th.png" alt="Side-by-side cross-section: a surface-mount component soldered to pads on top of the PCB, and a through-hole resistor with leads passing through the board" loading="lazy">
+                <figcaption>Surface-mount vs through-hole mounting</figcaption>
+              </figure>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Traces &amp; vias</h3>
+                <p>Traces are copper paths. A via is a plated hole connecting layers. Every via is a fabrication feature with clearance, drill and return-path implications.</p>
+              </div>
+              <figure class="concept-figure">
+                <img src="assets/trace-via.png" alt="Diagram of a signal trace changing layers through a via with return current on the plane" loading="lazy">
+                <figcaption>Trace, via, and return current on a reference plane</figcaption>
+              </figure>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Stackup</h3>
+                <p>A stackup is the ordered list of copper and insulating layers in the board. More layers give room for solid power/ground planes and denser routing but cost more. Our team uses four layers: signal / GND / power / signal.</p>
+              </div>
+              <figure class="concept-figure">
+                <img src="assets/stackup.png" alt="Four-layer PCB stackup cross-section with top, GND, VCC, and bottom copper layers" loading="lazy">
+                <figcaption>Example four-layer stackup (signal / GND / power / signal)</figcaption>
+              </figure>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Decoupling</h3>
+                <p>Local capacitors supply fast transient current to ICs. Place them close to each supply pin with short GND connections, not wherever there's room.</p>
+              </div>
+              <figure class="concept-figure">
+                <img src="assets/decoupling.png" alt="Proteus status LED with nearby decoupling capacitor C2 on 5V and GND" loading="lazy">
+                <figcaption>Proteus MCU status LED and its decoupling capacitor</figcaption>
+              </figure>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>ERC &amp; DRC</h3>
+                <p><strong>ERC</strong> (Electrical Rules Check) runs on the schematic: unconnected pins, missing power flags, conflicting drivers. <strong>DRC</strong> (Design Rules Check) runs on the PCB: clearances, unconnected copper, via and trace sizes. Neither one proves the circuit is correct.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+        <section id="foundations" class="section article" data-section>
+          <div class="section-heading"><h2><span class="num">1.3</span>KiCad fundamentals</h2><p>Download and install KiCad from <a href="https://www.kicad.org/download/" target="_blank" rel="noopener noreferrer">kicad.org</a>, then watch DigiKey’s <strong>KiCad 9.0: Getting Started</strong> series in order and follow along. Seven short episodes take you from install through Gerbers and a BOM on a simple water-alarm board. You'll be installing KiCad 10, but its UI has minimal changes from KiCad 9, so the series still applies.</p></div>
+          <div class="video-grid" data-video-ids="kicad1,kicad2,kicad3,kicad4,kicad5,kicad6,kicad7"></div>
+        </section>
+        <section class="section article" data-section>
+          <div class="section-heading"><h2>Additional learning</h2></div>
+          <div class="video-grid compact" data-video-ids="designTips,designMistakes"></div>
+        </section>
+        <section id="quiz" class="section article" data-section>
+          <div class="section-heading"><h2><span class="num">1.4</span>Knowledge check</h2></div>
+          <div class="quiz panel" id="quizApp" aria-live="polite"><div class="quiz-top"><span class="pill">6 QUESTIONS</span><span id="quizCounter">QUESTION 1 / 6</span></div><div class="quiz-meter"><div id="quizMeterFill"></div></div><div id="quizBody"></div><div class="quiz-actions"><button type="button" class="btn btn-dark" id="quizNext" disabled>Next question →</button><button type="button" class="btn btn-quiet" id="quizRestart" hidden>Try again ↻</button></div></div>
+        </section>
+        <div class="part-label" id="architecture"><span class="part-index">PART 02</span><span>DESIGNING A DEVELOPMENT BOARD</span><span class="part-duration">~DEC 28 – JAN 23</span></div>
+        <section class="section article" data-section>
+          <div class="section-heading"><h2><span class="num">2.0</span>Overview</h2><p>You'll be building a compact USB-powered STM32 board that has analog and digital signal inputs, CAN, microSD, status LEDs, programming/debug access, and test points. It shares many of the components and signal types we use in the other boards in the car.</p></div>
+        <div class="flow-note"><span class="flow-label">Board design flow</span><p class="flow-steps"><span class="flow-item">Git &amp; kicad-lib setup</span><span class="flow-item">Schematic</span><span class="flow-item flow-review">Mentor review</span><span class="flow-item">Placement</span><span class="flow-item flow-review">Mentor review</span><span class="flow-item">Routing</span><span class="flow-item flow-review">Mentor review</span><span class="flow-item">Finalize &amp; fab</span><span class="flow-item flow-review">Team review</span></p></div>
+        <p class="flow-timeline-note"><strong>Agree with your mentor on a reasonable timeline and set dates for the three mentor reviews</strong>, so that you have the board ready for the team review on January 23rd. Obviously you're not expected to work during the holidays.</p>
+        </section>
+        <section id="blocks" class="section article" data-section>
+          <div class="section-heading"><h2><span class="num">2.1</span>What will go on the board</h2></div>
+          <div class="component-grid">
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>USB-C + ESD</h3>
+                <p>The board will have a USB-C connector to provide the board 5 V from a computer and USB 2.0 data for flashing firmware on the MCU. A standard practice is to also add an ESD protection diode.</p>
+              </div>
+              <div class="concept-media">
+                  <div class="video-embed">
+                    <iframe src="https://www.youtube.com/embed/wzJn5hgjO9M" title="USB-C power and data for firmware flashing" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                  </div>
+                  <p class="video-embed-link"><a href="https://www.youtube.com/shorts/wzJn5hgjO9M" target="_blank" rel="noopener noreferrer">Watch Short ↗</a></p>
+                </div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Power: 5 V → 3.3 V</h3>
+                <p>USB supplies about 5 V, but the STM32 and most of the logic run at 3.3 V. A low-dropout regulator (LDO) steps 5 V down to 3.3 V so those parts get a stable supply.</p>
+              </div>
+              <div class="concept-media">
+                  <div class="video-embed">
+                    <iframe src="https://www.youtube.com/embed/1kcaUFzWLwA" title="How an LDO Regulator Works | Linear Voltage Regulator Explained" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                  </div>
+                  <p class="video-embed-link"><a href="https://www.youtube.com/shorts/1kcaUFzWLwA" target="_blank" rel="noopener noreferrer">Watch Short ↗</a></p>
+                </div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Analog inputs: divider + RC</h3>
+                <p>Many sensors output an analog voltage. On our car, some examples are pedal position sensors, suspension angle sensors, steering angle sensors, and battery cell thermistors. An ADC converts that voltage into a digital value the MCU can use. A resistor divider scales the signal into a safe range for a 3.3 V ADC, and an RC filter smooths noise. Changing the resistor and capacitor values changes the frequency that gets filtered.</p>
+                <p class="muted small">Optional:</p>
+              </div>
+              <div class="concept-media"><div class="video-grid compact" data-video-ids="rc"></div></div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Thermistor: temperature sensing</h3>
+                <p>An NTC thermistor is a resistor whose resistance drops as it gets hotter. With a 10 kΩ pull-up to 3.3 V it forms a voltage divider, and the ADC reads that voltage to work out the temperature. The battery module boards measure their cell temperatures with many of these, so this one lets you write and test that firmware on your own board.</p>
+              </div>
+              <div class="concept-media">
+                  <div class="video-embed video-embed-wide">
+                    <iframe src="https://www.youtube.com/embed/D2SWOVWMdU8" title="Basics of NTC and PTC Thermistors | Digi-Key Electronics" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                  </div>
+                  <p class="video-embed-link"><a href="https://www.youtube.com/watch?v=D2SWOVWMdU8" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a></p>
+                </div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Timer capture: pulse-based sensors</h3>
+                <p>Some sensors, like wheel-speed sensors, output pulses instead of a steady voltage. Timer input capture timestamps those edges so firmware can measure period, frequency, or pulse count.</p>
+              </div>
+              <div class="concept-media">
+                  <div class="video-embed">
+                    <iframe src="https://www.youtube.com/embed/gNLBPCVW0Bw" title="What is a Wheel Speed Sensor? | Car ABS &amp; Safety Explained" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                  </div>
+                  <p class="video-embed-link"><a href="https://www.youtube.com/shorts/gNLBPCVW0Bw" target="_blank" rel="noopener noreferrer">Watch Short ↗</a></p>
+                </div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Automotive communication: CAN</h3>
+                <p>CAN is the shared message bus that lets ECUs exchange data without a separate wire between every board. The STM32 has a CAN controller; an external transceiver converts the MCU’s TX/RX logic into differential CANH/CANL on the bus.</p>
+              </div>
+              <div class="concept-media">
+                  <div class="video-embed">
+                    <iframe src="https://www.youtube.com/embed/en3BHW3xwew" title="CAN bus overview" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                  </div>
+                  <p class="video-embed-link"><a href="https://www.youtube.com/shorts/en3BHW3xwew" target="_blank" rel="noopener noreferrer">Watch Short ↗</a></p>
+                </div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>MicroSD: SPI + local storage</h3>
+                <p>A microSD socket gives the board removable local storage over SPI, which is useful for logging when a network link isn’t available.</p>
+              </div>
+              <div class="concept-media">
+                  <div class="video-embed">
+                    <iframe src="https://www.youtube.com/embed/sWMlg_F1uvI" title="How does SPI (Serial Peripheral Interface) work" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                  </div>
+                  <p class="video-embed-link"><a href="https://www.youtube.com/shorts/sWMlg_F1uvI" target="_blank" rel="noopener noreferrer">Watch Short ↗</a></p>
+                </div>
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>Power LEDs + addressable status</h3>
+                <p>Simple rail LEDs show whether 5 V and 3.3 V are present. An addressable RGB LED, driven from a GPIO, shows MCU status such as boot, OK, or error.</p>
+              </div>
+              
+            </article>
+            <article class="component-card">
+              <div class="concept-copy">
+                <h3>BOOT0, reset, SWD, and test points</h3>
+                <p>BOOT0 and reset buttons, plus an SWD header, let you enter the bootloader, recover the MCU, and debug. Test points on the power rails make bring-up easier with a multimeter.</p>
+              </div>
+              
+            </article>
+          </div>
+        </section>
+        <section id="setup" class="section article" data-section>
+          <div class="section-heading"><span class="kicker">PART 02.2 / DUE DEC 05</span><h2><span class="num">2.2</span>Install tools and set up GitHub</h2></div>
+          <div class="step"><div class="step-num">01</div><div class="step-content"><h3>Get access and install the tools</h3><p>Send your GitHub username to your subteam lead. They'll send you an organization invite by email. Accept it. Then install <a href="https://git-scm.com/downloads" target="_blank" rel="noopener">Git</a> and <a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI (<code>gh</code>)</a>.</p><div class="tabs"><div class="tab-buttons" role="tablist" aria-label="Operating system"><button class="tab-button active" data-tab="mac" role="tab" aria-selected="true">macOS</button><button class="tab-button" data-tab="windows" role="tab" aria-selected="false">Windows</button></div><div class="tab-panel active" data-panel="mac"><p>Install <a href="https://brew.sh/" target="_blank" rel="noopener">Homebrew</a> following its official installer, then run:</p><pre><code>brew install git gh
+brew --version
+git --version
+gh --version
+gh auth login
+gh auth setup-git</code></pre><p>Choose GitHub.com, HTTPS, and browser login. In case Terminal cannot find Homebrew after installation, follow the installer output to add <code>brew</code> to your shell PATH.</p></div><div class="tab-panel" data-panel="windows"><p>Install <a href="https://git-scm.com/download/win" target="_blank" rel="noopener">Git for Windows</a> (includes Git Bash) and <a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI for Windows</a>. Open <strong>Git Bash</strong> and run:</p><pre><code>git --version
+gh --version
+gh auth login
+gh auth setup-git</code></pre><p>Use Git Bash for the commands in this course. If <code>gh</code> is not recognized, restart Git Bash or use Windows Terminal / PowerShell, and verify the CLI installer PATH settings.</p></div></div><div class="tasklist"><label><input type="checkbox" data-task="access"><span>Join the org and verify you can access private repos</span></label><label><input type="checkbox" data-task="tools"><span>Install Git and gh, and log in to GitHub</span></label></div></div></div>
+          <div class="step"><div class="step-num">02</div><div class="step-content"><h3>Create and clone your dev board repository</h3><p>Make a <strong>private repository in your personal GitHub account</strong>, not in the NYU Formula SAE Electronics org, named <code>FirstLast-Dev-PCB</code>, replacing <code>FirstLast</code> with your first and last name run together. Keep it private. Then add your mentor and Veikko (GitHub username <code>Veikkoish</code>) as collaborators: on the repo page go to <strong>Settings → Collaborators → Add people</strong>. Create a <code>FSAE</code> folder on your Desktop and clone the library and your practice repo as siblings.</p><pre><code># macOS or Git Bash on Windows
+mkdir -p ~/Desktop/FSAE
+cd ~/Desktop/FSAE
+
+git clone https://github.com/NYU-Formula-SAE-Electronics/fsae-kicad-lib.git
+git clone https://github.com/YOUR-GITHUB-USERNAME/FirstLast-Dev-PCB.git
+
+# browse an existing board for references and copying blocks
+git clone https://github.com/NYU-Formula-SAE-Electronics/Proteus-PCB.git</code></pre><p><strong>Replace <code>FirstLast</code> and <code>YOUR-GITHUB-USERNAME</code></strong> in the clone command. GitHub CLI alternative: <code>gh repo create FirstLast-Dev-PCB --private --clone</code>, while you're in the FSAE folder. If you use the CLI, add the collaborators afterwards on the repo's Settings page.</p><div class="folder-tree"><span>Desktop/</span><span>└─ FSAE/</span><span>　 ├─ fsae-kicad-lib/</span><span>　 ├─ FirstLast-Dev-PCB/</span><span>　 └─ Proteus-PCB/</span></div><div class="tasklist"><label><input type="checkbox" data-task="repo"><span>Repo created in your personal account, mentor and Veikkoish added as collaborators, and cloned into Desktop/FSAE</span></label><label><input type="checkbox" data-task="reference"><span>Reference team schematic opened and inspected</span></label></div></div></div>
+          <div class="step"><div class="step-num">03</div><div class="step-content"><h3>Copy the .gitignore from Proteus</h3><p>Copy the <code>.gitignore</code> file from <code>Proteus-PCB</code> into your own repo. It tells Git which temporary and backup files KiCad creates to leave out of your commits. The file name starts with a dot, so Finder hides it: use the terminal.</p><pre><code># macOS or Git Bash on Windows
+cp ~/Desktop/FSAE/Proteus-PCB/.gitignore ~/Desktop/FSAE/FirstLast-Dev-PCB/.gitignore</code></pre><p>Replace <code>FirstLast</code> as before. You'll commit it together with your first changes.</p><div class="tasklist"><label><input type="checkbox" data-task="gitignore"><span>.gitignore copied from Proteus-PCB into your repo</span></label></div></div></div>
+          <div class="step"><div class="step-num">04</div><div class="step-content"><h3>Connect the team KiCad library</h3><p>In KiCad's <strong>Preferences → Configure Paths</strong>, add an environment variable called <code>FSAE_LIB</code> and point it at the cloned <code>fsae-kicad-lib</code> folder. Use <strong>Preferences → Manage Symbol Libraries</strong> from the schematic editor, add <code>${FSAE_LIB}/fsae.kicad_sym</code> as the <em>project-specific</em> symbol library named <code>fsae</code>. For footprints, use <strong>Preferences → Manage Footprint Libraries</strong> and add the matching <code>.pretty</code> folder.</p><div class="tasklist"><label><input type="checkbox" data-task="lib"><span>Set FSAE_LIB and verify symbols, footprints and 3D models load</span></label><label><input type="checkbox" data-task="project"><span>Create a KiCad project inside my own PCB repo</span></label></div></div></div>
+        </section>
+        <section id="cmdline" class="section article" data-section>
+          <div class="section-heading"><span class="kicker">PART 02.3</span><h2><span class="num">2.3</span>Team Git workflow</h2><p>In case you’re new to Git and GitHub: <strong>Git</strong> tracks changes on your computer. <strong>GitHub</strong> is the platform on which we store our repos in the cloud. On this team we keep version management simple: push often and ask for review after each gate. Exact setup commands are in the previous section.</p></div>
+          <div class="sequence">
+            <div class="sequence-item"><span>01</span><div><h3>One FSAE folder</h3><p>Keep all team KiCad work as sibling folders under a single parent, usually <code>Desktop/FSAE</code>. The shared library and every board repo sit next to each other so paths stay consistent.</p><div class="folder-tree"><span>Desktop/</span><span>└─ FSAE/</span><span>　 ├─ fsae-kicad-lib/</span><span>　 ├─ FirstLast-Dev-PCB/</span><span>　 ├─ Proteus-PCB/</span><span>　 └─ …other board repos</span></div></div></div>
+            <div class="sequence-item"><span>02</span><div><h3>Clone, then work locally</h3><p>Copy a repo once with <code>git clone</code>. Edit the KiCad project on your machine. Before you start a session on a shared repo (especially the library), run <code>git pull origin main</code> so you have everyone else’s latest commits.</p></div></div>
+            <div class="sequence-item"><span>03</span><div><h3>End every session with a push</h3><pre><code>git add .
+git commit -m "short description of what you did"
+git push origin main</code></pre></div></div>
+            <div class="sequence-item"><span>04</span><div><h3>Usually work on <code>main</code></h3><p>We typically work directly on <code>main</code> because PCB files don’t merge the same way code files do. Git can’t cleanly combine two people editing the same schematic or layout. We sometimes still use branching for parallel work, but the merge has to be done manually in KiCad, not as an automatic Git merge.</p></div></div>
+            <div class="sequence-item"><span>05</span><div><h3>Reviews happen on GitHub</h3><p>When a review gate is ready, push to <code>main</code>, open the repo in the browser to confirm the files are there, then DM your mentor.</p></div></div>
+          </div>
+        </section>
+        <section id="schematic" class="section article" data-section>
+          <div class="section-heading"><span class="kicker">PART 02.4 / SCHEMATIC</span><h2><span class="num">2.4</span>Schematic design</h2></div>
+          <h3 class="rules-title"><span class="num">2.4.1</span>Schematic rules</h3>
+          <div class="instruction-grid">
+            <div class="instruction-card">
+              <p>Title each block. Keep nets short and clear. Use labels instead of wires that snake across the page. Clean grouping matters.</p>
+              <figure class="rule-example"><img src="assets/rule-block-title.png" alt="Proteus Brake Valve Driver block with a titled blue box" loading="lazy"></figure>
+            </div>
+            <div class="instruction-card">
+              <p>ICs, connectors, switches, and LEDs: the parts in the bill of materials, from <code>fsae-kicad-lib</code>. Passives: KiCad <code>R</code> and <code>C_Small</code> at values specified in the datasheet. Use footprint <code>Resistor_SMD:R_0603_1608Metric</code> for all resistors and <code>Capacitor_SMD:C_0603_1608Metric</code> for capacitors unless otherwise specified.</p>
+              <figure class="rule-example"><img src="assets/rule-footprint.png" alt="KiCad symbol properties with Resistor_SMD R_0603_1608Metric footprint" loading="lazy"></figure>
+            </div>
+            <div class="instruction-card">
+              <p>Always put power nets like <code>+3V3</code> pointing up and GND symbols pointing down.</p>
+              <figure class="rule-example rule-example-tall"><img src="assets/rule-power-gnd.png" alt="Proteus example with VBUS power symbol up and GND pointing down" loading="lazy"></figure>
+            </div>
+            <div class="instruction-card">
+              <p>Name nets in one consistent style: uppercase with underscores and no spaces, and a name that says what the net does, like <code>ADC4_SCALED</code>. The same net keeps the same name in every block.</p>
+            </div>
+            <div class="instruction-card">
+              <p>Annotate the schematic so every part gets a unique reference (R1, C1…) from the annotate tool, never typed by hand. Every resistor and capacitor shows its value, like <code>10k</code> or <code>100nF</code>.</p>
+            </div>
+            <div class="instruction-card">
+              <p>Good practice, but not mandatory: put a no-connect flag (the X) on pins you deliberately leave unconnected, like the CAN transceiver <code>S</code> pin. It clears ERC warnings and shows the pin wasn't forgotten. Since we do placement before all the I/O is defined, unused MCU GPIOs can stay unflagged for now.</p>
+            </div>
+            <div class="instruction-card">
+              <p>Lay out each block so signals flow left to right: inputs on the left, outputs on the right.</p>
+            </div>
+          </div>
+          <h3 class="rules-title"><span class="num">2.4.2</span>Populate the Schematic</h3>
+          <div class="block-stack">
+            <article class="block-card">
+              <div class="block-head"><h3>USB-C + ESD</h3></div>
+              <div class="block-split">
+                <div class="block-copy">
+                  <ol class="block-steps">
+                    <li>Add the USB-C connector <code>TYPE-C-31-M-12</code> from the <code>fsae</code> library (Place Symbol / Add Part).</li>
+                    <li>Add the ESD diode <code>USBLC6-2SC6</code> from the <code>fsae</code> library. Wire USB D+/D− through it toward the MCU.</li>
+                    <li>Add <strong>5.1 kΩ</strong> pull-downs from <code>CC1</code> and <code>CC2</code> to GND so the board acts as a USB power sink.</li>
+                  </ol>
+                  <p class="muted small">The Proteus reference on the right uses a waterproof USB-C for the car PCB. On this course board the connector is different: use <code>TYPE-C-31-M-12</code>.</p>
+                </div>
+                <figure class="source-image block-ref">
+                  <img src="assets/block-usbc-esd.png" alt="Proteus USB-C Input and Protection block with CC pull-downs and USBLC6-2SC6" loading="lazy">
+                  <figcaption>Proteus reference: USB-C + ESD (connector differs on the course board)</figcaption>
+                </figure>
+              </div>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>Power: 5 V → 3.3 V</h3></div>
+              <ol class="block-steps">
+                <li>Add the LDO <code>LD1117S33TR</code> from the <code>fsae</code> library (Place Symbol / Add Part). This is a <strong>fixed 3.3 V</strong> variant.</li>
+                <li>Open the <a href="https://www.st.com/resource/en/datasheet/ld1117.pdf" target="_blank" rel="noopener">LD1117 datasheet</a> and use the <strong>Schematic Application</strong> section to choose input/output capacitor values and how to wire the pins to the <code>VBUS</code> and <code>+3V3</code> nets (and GND).</li>
+                <li>Assign the output capacitor footprint <code>Capacitor_SMD:C_0805_2012Metric</code>.</li>
+              </ol>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>MCU</h3></div>
+              <div class="block-split">
+                <div class="block-copy">
+                  <ol class="block-steps">
+                    <li>Add <code>STM32F042C6T6</code> from the <code>fsae</code> library (Place Symbol / Add Part).</li>
+                    <li>Follow <strong>Figure 13. Power supply scheme</strong> in the <a href="https://www.st.com/resource/en/datasheet/stm32f042c6.pdf" target="_blank" rel="noopener">STM32F042 datasheet</a> for VDDA/VSSA, VBAT, VDDIO2, and local decoupling. The datasheet shows those caps wired directly at the MCU pins. Instead, put them in a separate power block and connect to the MCU with net labels (<code>+3V3</code>, <code>VDDA</code>, <code>VDD</code>, GND, etc.).</li>
+                    <li>From <strong>Table 13. STM32F042x pin definitions</strong> in the datasheet, check the <strong>LQFP-48</strong> column for USB D+ / D−, NRST, BOOT0, SWCLK, SWDIO, CAN_RX, and CAN_TX. CAN can map to several pins, but the other options clash with functions you still need free. There is only one workable free pin for each of CAN_RX and CAN_TX. The remaining signals (ADC, timer, SPI, LEDs, etc.) are more flexible; those will be assigned later.</li>
+                  </ol>
+                  <p class="muted small">The Proteus reference on the right is organizational only. Capacitor values and filter parts differ because those boards use a different MCU.</p>
+                </div>
+                <figure class="source-image block-ref">
+                  <img src="assets/block-mcu-power.png" alt="Proteus STM Power Input block with separate VREF VDDA and VDD decoupling" loading="lazy">
+                  <figcaption>Proteus reference: separate MCU power block (contents differ for F042)</figcaption>
+                </figure>
+              </div>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>Signal inputs: ADC + timer</h3></div>
+              <div class="block-split">
+                <div class="block-copy">
+                  <ol class="block-steps">
+                    <li>For each of the two ADC channels, place KiCad <code>R</code> / <code>C_Small</code> using the Dev-Test-PCB values: <strong>10 kΩ</strong> series, <strong>15 kΩ</strong> to GND, and <strong>1 µF</strong> to GND on the scaled ADC node (divider + RC).</li>
+                    <li>For timer capture: one channel is direct 0–3.3 V logic; the other uses a divider for nominal 0–5 V input.</li>
+                    <li>Label input and MCU-side nets clearly (e.g. <code>ADC4</code> → <code>ADC4_SCALED</code>). Screw terminals come later.</li>
+                  </ol>
+                </div>
+                <figure class="source-image block-ref">
+                  <img src="assets/analog-rc-divider.png" alt="Dev-Test-PCB ADC divider RC filter: 10k series, 15k and 1uF to GND" loading="lazy">
+                  <figcaption>Dev-Test-PCB reference: 10k / 15k / 1 µF divider + RC</figcaption>
+                </figure>
+              </div>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>Thermistor</h3></div>
+              <ol class="block-steps">
+                <li>Add the NTC thermistor <code>NCP21XV103J03RA</code> (10 kΩ, 0805) from the <code>fsae</code> library. Connect one end to <code>GND</code>. The other end is the output node.</li>
+                <li>Place a <strong>10 kΩ</strong> KiCad <code>R</code> as the pull-up. Connect one pad to the output node and the other pad to <code>+3V3</code>.</li>
+                <li>Place a <strong>100 nF</strong> <code>C_Small</code>. Connect one pad to the output node and the other pad to <code>GND</code>.</li>
+                <li>Add a net label such as <code>THERM</code> on the output node and connect it to an ADC-capable pin on the STM32. You'll pick the exact pin when you assign the remaining GPIOs during placement.</li>
+              </ol>
+              <p class="muted small">The thermistor's resistance drops as it heats up, so the voltage on <code>THERM</code> falls as the temperature rises. The battery module boards read their cell thermistors (Vishay NTCLE350E4) through the same 10 kΩ pull-up divider, and this part follows almost the same curve, so you can write and test the temperature firmware on this board.</p>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>CAN</h3></div>
+              <ol class="block-steps">
+                <li>Add the CAN transceiver <code>TJA1051T_3_1J</code> (<code>TJA1051T/3/1J</code>, SOIC-8) from the <code>fsae</code> library, not the HVSON <code>TJA1051TK</code> variant.</li>
+                <li>Open the <a href="https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf" target="_blank" rel="noopener">TJA1051 datasheet</a> and follow <strong>Fig 6. Typical application of the TJA1051T/3 or TJA1051TK/3</strong> to wire <code>VCC</code>, <code>VIO</code>, TXD/RXD, <code>CANH</code>, and <code>CANL</code>. The <code>S</code> pin can be left unconnected.</li>
+                <li>Add <code>ESDCAN01-2BLY</code> from the <code>fsae</code> library across <code>CANH</code> / <code>CANL</code> (and GND as the symbol requires) for bus ESD protection.</li>
+                <li>Add selectable end termination: place <code>2.54-1*2</code> from <code>fsae</code>; connect one pad to <code>CANH</code> and the other pad to a <strong>120 Ω</strong> resistor whose far end goes to <code>CANL</code>.</li>
+              </ol>
+              <p class="muted small">On car boards we often use split termination (two ~62 Ω resistors in series with a small capacitor from the midpoint to GND) to shunt common-mode noise. A single 120 Ω jumpered terminator is enough for this course board.</p>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>MicroSD</h3></div>
+              <div class="block-split">
+                <div class="block-copy">
+                  <ol class="block-steps">
+                    <li>Your microSD application uses the same parts and wiring as other team boards, so copy the finished block from Proteus instead of redrawing it.</li>
+                    <li>Open <code>Proteus.kicad_sch</code>, select the entire <strong>SD Card</strong> blue box, and copy with <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd>.</li>
+                    <li>Open your course board schematic and paste with <kbd>⌘V</kbd> / <kbd>Ctrl+V</kbd>. Keep the SPI nets and 10 kΩ pull-ups as in the reference.</li>
+                  </ol>
+                </div>
+                <figure class="source-image block-ref">
+                  <img src="assets/block-microsd.png" alt="Proteus SD Card block with TF-01A and SPI pull-ups" loading="lazy">
+                  <figcaption>Proteus reference: copy this SD Card box</figcaption>
+                </figure>
+              </div>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>Power LEDs + test points</h3></div>
+              <div class="block-split">
+                <div class="block-copy">
+                  <ol class="block-steps">
+                    <li>Copy the rail LED circuits from Proteus: open <code>Proteus.kicad_sch</code>, select the power LED block (5 V and 3.3 V <code>0805G</code> LEDs with their series resistors), and paste with <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd> then <kbd>⌘V</kbd> / <kbd>Ctrl+V</kbd>. Rename the 5 V net to <code>VBUS</code>.</li>
+                    <li>Copy the <code>+3V3</code>, <code>VBUS</code> and <code>GND</code> test pads from Proteus as well. You don't need the <code>+5V</code> one.</li>
+                  </ol>
+                </div>
+                <div class="block-refs">
+                  <figure class="source-image block-ref">
+                    <img src="assets/block-power-leds.png" alt="Proteus power LEDs: +5V with 1.5k and +3V3 with 330 ohm" loading="lazy">
+                    <figcaption>Proteus reference: copy these rail LEDs</figcaption>
+                  </figure>
+                  <figure class="source-image block-ref">
+                    <img src="assets/block-test-points.png" alt="Proteus test pads for +3V3, VBUS, +5V, and GND" loading="lazy">
+                    <figcaption>Proteus reference: copy the +3V3, VBUS and GND test pads</figcaption>
+                  </figure>
+                </div>
+              </div>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>Addressable status LED</h3></div>
+              <ol class="block-steps">
+                <li>Add <code>XL-3030RGBC-2812B</code> from the <code>fsae</code> library.</li>
+                <li>Add a net label to the data input <code>DIN</code> pin. Put a no-connect flag on <code>DOUT</code>.</li>
+                <li>Place a 100 nF <code>C_Small</code> from <code>VDD</code> to <code>GND</code> right next to the LED. Connect the capacitor to <code>VBUS</code>.</li>
+              </ol>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>Screw terminals</h3></div>
+              <div class="block-split">
+                <div class="block-copy">
+                  <ol class="block-steps">
+                    <li>Add four <code>WJ127-5.0-2P</code> terminals from the <code>fsae</code> library.</li>
+                    <li>Assign them to: <code>VBUS</code>/<code>GND</code>, both ADC channels, both timer channels, and CANH/CANL.</li>
+                    <li>Label each terminal clearly on the schematic and match the naming style in the Dev-Test-PCB reference on the right (this course board only needs those four pairs, not every terminal shown there).</li>
+                  </ol>
+                </div>
+                <figure class="source-image block-ref">
+                  <img src="assets/block-screw-terminals.png" alt="Dev-Test-PCB screw terminals: WJ127-5.0-2P blocks for power, ADC, TIM, and CAN with net labels" loading="lazy">
+                  <figcaption>Dev-Test-PCB reference: screw terminal labeling style</figcaption>
+                </figure>
+              </div>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>SWD</h3></div>
+              <div class="block-split">
+                <div class="block-copy">
+                  <ol class="block-steps">
+                    <li>Use the same Tag-Connect SWD header wiring as Proteus.</li>
+                    <li>Open <code>Proteus.kicad_sch</code>, select the entire <strong>SWD</strong> blue box, and copy with <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd>.</li>
+                    <li>Paste into your course schematic and confirm nets <code>+3V3</code>, <code>GND</code>, <code>NRST</code>, <code>SWCLK</code>, and <code>SWDIO</code> match your MCU (leave SWO unconnected if the reference does).</li>
+                  </ol>
+                </div>
+                <figure class="source-image block-ref">
+                  <img src="assets/block-swd.png" alt="Proteus SWD TagConnect TC2030 header block" loading="lazy">
+                  <figcaption>Proteus reference: copy this SWD box</figcaption>
+                </figure>
+              </div>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>BOOT0 and reset buttons</h3></div>
+              <div class="block-split">
+                <div class="block-copy">
+                  <ol class="block-steps">
+                    <li>STM32F042 uses the same BOOT0 / NRST interface pattern as the Proteus STM32G4: BOOT0 low for flash boot, high for system memory; NRST active-low with an internal pull-up.</li>
+                    <li>Open <code>Proteus.kicad_sch</code>, select the entire <strong>Boot &amp; RST Buttons</strong> blue box, and copy with <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd>.</li>
+                    <li>Paste into your course schematic and connect <code>BOOT</code> / <code>NRST</code> to the matching MCU pins (<code>TS-1088-AR02016</code> is already in <code>fsae</code>).</li>
+                  </ol>
+                </div>
+                <figure class="source-image block-ref">
+                  <img src="assets/block-boot-rst.png" alt="Proteus Boot and RST buttons with 10k pull-down and 100nF on NRST" loading="lazy">
+                  <figcaption>Proteus reference: copy this Boot &amp; RST box</figcaption>
+                </figure>
+              </div>
+            </article>
+          </div>
+          <h3 class="rules-title"><span class="num">2.4.3</span>Parts checklist</h3>
+          <p>Once everything is added to the schematic, tick off each part as you confirm it is there. Resistors, capacitors and test points are not listed. The jumper shunt is not drawn in the schematic or on the PCB, only its header.</p>
+          <div class="table-scroll"><table class="bom-table"><thead><tr><th>In schematic</th><th>Block</th><th>Part / quantity</th><th>Purpose</th><th>Reference</th></tr></thead><tbody>
+          <tr><td><input type="checkbox" aria-label="MCU is in the schematic"></td><td>MCU</td><td><strong>1× STM32F042C6T6</strong></td><td>Main microcontroller. Runs the firmware and talks USB, CAN, SPI and ADC.</td><td><a href="https://www.lcsc.com/product-detail/C88447.html" target="_blank" rel="noopener">LCSC C88447 ↗</a></td></tr>
+          <tr><td><input type="checkbox" aria-label="CAN is in the schematic"></td><td>CAN</td><td><strong>1× TJA1051T/3/1J</strong></td><td>CAN transceiver. Converts the MCU’s CAN logic signals to the CANH/CANL bus levels.</td><td><a href="https://www.lcsc.com/product-detail/C38695.html" target="_blank" rel="noopener">LCSC C38695 ↗</a></td></tr>
+          <tr><td><input type="checkbox" aria-label="CAN ESD is in the schematic"></td><td>CAN ESD</td><td><strong>1× ESDCAN01-2BLY</strong></td><td>Protects the CANH/CANL lines from static discharge and voltage spikes.</td><td><a href="https://www.lcsc.com/product-detail/C1976606.html" target="_blank" rel="noopener">LCSC C1976606 ↗</a></td></tr>
+          <tr><td><input type="checkbox" aria-label="USB-C is in the schematic"></td><td>USB-C</td><td><strong>1× TYPE-C-31-M-12</strong></td><td>Connector for USB power and data from the computer.</td><td><a href="https://www.lcsc.com/product-detail/C165948.html" target="_blank" rel="noopener">LCSC C165948 ↗</a></td></tr>
+          <tr><td><input type="checkbox" aria-label="USB ESD is in the schematic"></td><td>USB ESD</td><td><strong>1× USBLC6-2SC6</strong></td><td>Protects the USB data lines from static discharge.</td><td><a href="https://www.lcsc.com/product-detail/C7519.html" target="_blank" rel="noopener">LCSC C7519 ↗</a></td></tr>
+          <tr><td><input type="checkbox" aria-label="3.3 V supply is in the schematic"></td><td>3.3 V supply</td><td><strong>1× LD1117S33TR</strong></td><td>Regulates 5 V down to 3.3 V for the MCU and other 3.3 V parts.</td><td><a href="https://www.lcsc.com/product-detail/C86781.html" target="_blank" rel="noopener">LCSC C86781 ↗</a></td></tr>
+          <tr><td><input type="checkbox" aria-label="microSD is in the schematic"></td><td>microSD</td><td><strong>1× TF-01A</strong></td><td>Card socket for logging data over SPI.</td><td><a href="https://www.lcsc.com/product-detail/C91145.html" target="_blank" rel="noopener">LCSC C91145 ↗</a></td></tr>
+          <tr><td><input type="checkbox" aria-label="Power LEDs is in the schematic"></td><td>Power LEDs</td><td><strong>2× KT-0805G</strong></td><td>Show that the 5 V and 3.3 V rails are live.</td><td><a href="https://www.lcsc.com/product-detail/C2297.html" target="_blank" rel="noopener">LCSC C2297 ↗</a></td></tr>
+          <tr><td><input type="checkbox" aria-label="Status LED is in the schematic"></td><td>Status LED</td><td><strong>1× XL-3030RGBC-2812B</strong></td><td>Addressable RGB LED that shows what the board is doing.</td><td><a href="https://www.lcsc.com/product-detail/C5349958.html" target="_blank" rel="noopener">LCSC C5349958 ↗</a></td></tr>
+          <tr><td><input type="checkbox" aria-label="Screw terminals is in the schematic"></td><td>Screw terminals</td><td><strong>4× WJ127-5.0-2P</strong></td><td>Connect wires for VBUS/GND, analog inputs, timer inputs and the CAN bus.</td><td><a href="https://www.lcsc.com/product-detail/Terminal-Blocks_WJ127-5-0-2P_C3703.html" target="_blank" rel="noopener">LCSC C3703 ↗</a></td></tr>
+          <tr><td><input type="checkbox" aria-label="CAN jumper is in the schematic"></td><td>CAN jumper</td><td><strong>1× 2.54-1*2 header</strong></td><td>Posts for a jumper that switches the 120 Ω CAN termination in or out.</td><td><a href="https://www.lcsc.com/product-detail/C5116481.html" target="_blank" rel="noopener">LCSC C5116481 ↗</a></td></tr>
+          <tr><td><input type="checkbox" aria-label="Thermistor is in the schematic"></td><td>Thermistor</td><td><strong>1× NCP21XV103J03RA</strong></td><td>10 kΩ NTC thermistor for reading board temperature, like the cell thermistors on the battery modules.</td><td><a href="https://www.lcsc.com/product-detail/C73681.html" target="_blank" rel="noopener">LCSC C73681 ↗</a></td></tr>
+          <tr><td><input type="checkbox" aria-label="Buttons is in the schematic"></td><td>Buttons</td><td><strong>2× TS-1088-AR02016</strong></td><td>BOOT0 enters the USB bootloader; NRST resets the MCU.</td><td><a href="https://www.lcsc.com/product-detail/C720477.html" target="_blank" rel="noopener">LCSC C720477 ↗</a></td></tr>
+          </tbody></table></div>
+          <h3 class="rules-title"><span class="num">2.4.4</span>Schematic review &amp; cleanup</h3>
+          <article class="block-card">
+            <div class="block-split">
+              <div class="block-copy">
+                <ol class="block-steps">
+                  <li>Put every block in a titled box, and space the boxes evenly like the reference.</li>
+                  <li>Walk the whole schematic: pins wired or no-connected, values filled in, footprints assigned.</li>
+                </ol>
+                <p class="muted small">Don’t trust a clean ERC yet, because not every MCU pin is assigned.</p>
+              </div>
+              <figure class="source-image block-ref">
+                <img src="assets/proteus-schematic.png" alt="Full Proteus 1.0 schematic with titled, evenly spaced boxes" loading="lazy">
+                <figcaption>Full Proteus 1.0 schematic reference</figcaption>
+              </figure>
+            </div>
+          </article>
+          <div class="panel reviewer"><span class="pill">REVIEW GATE 01 / SCHEMATIC</span><h3>Push and ask for review</h3><p>Check your schematic visually against a team reference like Proteus-PCB. When complete, run in your practice repo:</p><pre><code>git status
+git add .
+git commit -m "schematic done"
+git push origin main</code></pre><p>Open the repo in your browser and confirm the latest commit and <code>.kicad_sch</code> file are visible. DM your mentor with the repository URL and ask for a <strong>schematic review</strong>. Don't move on until major issues are addressed.</p><div class="tasklist"><label><input type="checkbox" data-task="schematicdone"><span>All blocks boxed and self-reviewed</span></label><label><input type="checkbox" data-task="r1"><span>Review 01 completed; feedback committed and pushed</span></label></div></div>
+        </section>
+        <section id="placement" class="section article" data-section>
+          <div class="section-heading"><span class="kicker">PART 02.5 / PHYSICAL DESIGN</span><h2><span class="num">2.5</span>Placement and layout</h2><p>Placement is a big part of the artistry of PCB design, so take your time. Try a few different placements and outline shapes, and be ready to explain the reasons behind the one you choose.</p></div>
+          <h3 class="rules-title" id="placement-requirements"><span class="num">2.5.1</span>Requirements</h3>
+          <p>Since we won’t have an enclosure or other tight space requirements for this board, there’s a lot of freedom to explore different outlines and placements. The only hard limit is to stay under 100 × 100 mm, which keeps manufacturing affordable. Pick any size under that. Keep it rectangular, though it doesn't have to be square. While you could probably fit it in as small as 60 × 40 mm, the goal isn’t the smallest possible board: keep it compact enough to carry and not look too empty, but not so small that routing becomes difficult or probing becomes awkward.</p>
+          <div class="notice"><strong>Watch before opening PCB Editor</strong><p>Watch these three before you start placement. Aesthetic layout matters: a board that looks intentional usually routes cleaner too.</p><div class="video-grid compact" data-video-ids="designTips,designMistakes,aesthetic"></div></div>
+          <h3 class="rules-title"><span class="num">2.5.2</span>Placement rules</h3>
+          <div class="block-stack">
+            <article class="block-card" id="rule-via">
+              <div class="block-head"><h3>Via distance to pads</h3></div>
+              <p>Don't place vias closer than the via's outer edge at the thin red outline of the pad. Place GND and power vias at this distance, including the vias at decoupling cap pads and IC GND pads. This matters most on high-current areas such as the LDO input/output. Vias for signals are actually better a bit further away.</p>
+              <div class="do-dont">
+                <figure class="source-image dont"><img src="assets/via-distance-dont.png" alt="A +3V3 via whose edge crosses the thin red pad outline, too close to the pad" loading="lazy"><figcaption><b>Don't:</b> inconsistent via spacing.</figcaption></figure>
+                <figure class="source-image do"><img src="assets/via-distance.png" alt="KiCad F.Cu view of GND and +3V3 vias placed with their outer edge at the thin red clearance outline of the pads" loading="lazy"><figcaption><b>Do:</b> via edge at the thin red outline.</figcaption></figure>
+              </div>
+            </article>
+            
+            <article class="block-card">
+              <div class="block-head"><h3>Don't overlap courtyards</h3></div>
+              <p>Keep every part's courtyard clear of the others. Courtyards shouldn't intersect.</p>
+              <div class="do-dont">
+                <figure class="source-image dont"><img src="assets/courtyard-dont.png" alt="Two footprints whose magenta courtyard boxes overlap" loading="lazy"><figcaption><b>Don't:</b> courtyards overlap.</figcaption></figure>
+                <figure class="source-image do"><img src="assets/courtyard-do.png" alt="Two footprints side by side with separate, non-overlapping courtyard boxes" loading="lazy"><figcaption><b>Do:</b> courtyards stay separate.</figcaption></figure>
+              </div>
+            </article>
+            <article class="block-card" id="rule-silk">
+              <div class="block-head"><h3>Keep silkscreen clean</h3></div>
+              <p>Place each reference and label right beside the component it refers to, so it's obvious what it belongs to. Silkscreen must not touch pads or other silkscreen: keep at least <strong>0.2 mm</strong> clearance from both.</p>
+              <div class="do-dont">
+                <figure class="source-image dont"><img src="assets/silkscreen-dont.png" alt="Reference designators drawn on top of pads and colliding with each other" loading="lazy"><figcaption><b>Don't:</b> silkscreen on pads or colliding.</figcaption></figure>
+                <figure class="source-image do"><img src="assets/silkscreen-do.png" alt="Reference designators placed clear of pads, beside their components" loading="lazy"><figcaption><b>Do:</b> clear of pads, beside its part.</figcaption></figure>
+              </div>
+            </article>
+            <article class="block-card" id="rule-labels">
+              <div class="block-head"><h3>Label LEDs, test points and buttons</h3></div>
+              <p>For the 5V and 3V3 LEDs, add a text object on the <strong>F.Silkscreen</strong> layer next to each LED saying which rail it shows, and place that rail's test point right beside it so it's obvious what each one refers to. The GND test point can go anywhere on the board, with a <strong>GND</strong> silkscreen marking next to it. For the reset and boot buttons, add <strong>RESET</strong> and <strong>BOOT</strong> text elements next to them.</p>
+              <p>Reference labels such as LED1, SW1 and TP1 can be hidden, since these markings already say what each part is. Double-click the part (for example LED1) and untick the <strong>Show</strong> checkbox for its reference.</p>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>Check the 3D view often</h3></div>
+              <p>Open <strong>View → 3D Viewer</strong> regularly. It shows how the board will actually look, so you can judge whether you like it and whether parts look evenly spaced.</p>
+              <p>If a part from the <code>fsae</code> library shows only its pads and silkscreen, KiCad can't find its 3D model. Library footprints find their models through <code>${FSAE_LIB}/fsae.3dshapes/</code>, so first check that <code>FSAE_LIB</code> is set (step 04 of the setup) and that your <code>fsae-kicad-lib</code> clone is up to date with <code>git pull</code>. Then run <strong>Tools → Update Footprints from Library</strong> in the PCB editor so the parts on your board pick up the current paths.</p>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>Align parts in rows and columns</h3></div>
+              <p>Where parts sit in a row or column, line them up: select them, right-click → <strong>Align/Distribute</strong> → <em>Align to Horizontal Center</em> or <em>Align to Vertical Center</em>.</p>
+              <div class="do-dont">
+                <figure class="source-image dont"><img src="assets/align-dont.png" alt="Two identical connectors placed side by side but offset vertically, not aligned" loading="lazy"><figcaption><b>Don't:</b> parts in a row sit at different heights.</figcaption></figure>
+                <figure class="source-image do"><img src="assets/silkscreen-do.png" alt="Two identical connectors placed side by side, aligned in a row" loading="lazy"><figcaption><b>Do:</b> parts line up in the row.</figcaption></figure>
+              </div>
+            </article>
+          </div>
+          <p class="muted small">For more examples, look at how our team’s boards are laid out (GitHub, team access required):</p>
+          <div class="reference-links"><a href="https://github.com/NYU-Formula-SAE-Electronics/Proteus-PCB" target="_blank" rel="noopener">↗ Proteus-PCB</a><a href="https://github.com/NYU-Formula-SAE-Electronics/STM-Core-PCB" target="_blank" rel="noopener">↗ STM-Core-PCB</a><a href="https://github.com/NYU-Formula-SAE-Electronics/Dev-Test-PCB" target="_blank" rel="noopener">↗ Dev-Test-PCB</a><a href="https://github.com/NYU-Formula-SAE-Electronics/Dash-PCB" target="_blank" rel="noopener">↗ Dash-PCB</a><a href="https://github.com/NYU-Formula-SAE-Electronics/Steering-PCB" target="_blank" rel="noopener">↗ Steering-PCB</a><a href="https://github.com/NYU-Formula-SAE-Electronics/Comms-PCB" target="_blank" rel="noopener">↗ Comms-PCB</a><a href="https://github.com/NYU-Formula-SAE-Electronics/Pre-Charge" target="_blank" rel="noopener">↗ Pre-Charge</a></div>
+          <h3 class="rules-title"><span class="num">2.5.3</span>Placement flow</h3>
+          <div class="sequence"><div class="sequence-item"><span>01</span><div><h3>Stackup</h3><p>Set four copper layers: F.Cu signals, In1.Cu GND, In2.Cu power, B.Cu signals. All parts go on the top layer.</p></div></div><div class="sequence-item"><span>02</span><div><h3>Functional islands</h3><p>Group each block’s parts into a tight island. Decoupling caps go right at their supply pins with short GND vias. Add vias as you go: 0.6/0.3 mm and 0.5/0.25 mm only, and 0.8/0.4 mm on high-current lines such as the LDO input/output where there's space. Clean up the silkscreen of each island as you finish it (see <a href="#rule-silk">Keep silkscreen clean</a> and <a href="#rule-labels">Label LEDs, test points and buttons</a>) instead of leaving it for the end. Label every connector, and look at Dev-Test-PCB for reference on how the screw terminals are labeled.</p></div></div><div class="sequence-item"><span>03</span><div><h3>Add the logo footprint</h3><p>In the PCB editor, click <strong>Footprint Library Browser</strong> in the top toolbar. Filter by library: <code>fsae</code>, then by footprint: <code>logo</code>. Add it to the board and put it where it looks good, clear of pads and vias. Then add a text item under or next to it that says <strong>NYU</strong>, in a font and size of your choice. Add the revision as text too, for example Dev-F0 Rev 1.0, and your name or initials somewhere on the board (front or back silkscreen, your call) to identify it as yours. Feel free to customize it with any additional graphic elements you want. You can nudge everything later as the layout takes shape.</p><figure class="source-image"><img src="assets/logo-footprint.png" alt="KiCad Footprint Library Browser showing the logo footprint in the fsae library" loading="lazy"><figcaption>The logo footprint in the fsae library</figcaption></figure></div></div><div class="sequence-item"><span>04</span><div><h3>Arrange around the MCU</h3><p>Rotate and place the islands so signals don’t cross the MCU, e.g. USB-C on the same side as the USB pins. I/O isn’t assigned yet, so place those terminals where traces would come out cleanly: ADC is available on pins 10–19, timer channels are on almost every side of the chip. SPI has three possible combinations of pins to use. Keep islands on the same power net, such as VBUS or 3V3, somewhat near each other, since that makes drawing the internal layer VBUS and 3V3 zones easier.</p></div></div><div class="sequence-item"><span>05</span><div><h3>Board outline</h3><p>As the islands come together you’ll see how much space you need and what looks good in both 2D and 3D view, with enough space for vias, silkscreen, and traces to be added. Round the corners if you want. Reread <a href="#placement-requirements">2.5.1 Requirements</a> before you settle on a size.</p></div></div><div class="sequence-item"><span>06</span><div><h3>Connectors</h3><p>Keep USB-C and the screw terminals on different edges. The terminals can go on any of the other edges and don’t all need to share one. Think about how you’ll use the board: plugged into your laptop on a table, wired to a sensor, a BMS or another PCB.  </p></div></div><div class="sequence-item"><span>07</span><div><h3>Assign the remaining GPIOs</h3><p>Open Table 13 in the STM32F042 datasheet. For each signal below, pick a pin on the side of the MCU facing its island:</p><ul class="block-steps"><li><strong>ADC inputs</strong>: a pin marked as an ADC input (pins 10–19).</li><li><strong>Timer inputs and the LED data line</strong>: a pin with a timer channel (TIMx_CHy).</li><li><strong>SD card SPI</strong>: SCK, MISO and MOSI must all come from the same SPI peripheral. CS can be any free GPIO.</li></ul><p>Where you can, leave an unused pin between ADC and timer signals and keep their traces apart, to avoid coupling. Then update the net labels in the schematic to match and run <strong>Update PCB from Schematic</strong>.</p></div></div><div class="sequence-item"><span>08</span><div><h3>Iterate</h3><p>Everything is still easy to adjust. Visualize where the traces will run and look at the 3D view, then move islands and silkscreen markings, and adjust the outline too if needed. Placement will still be fine-tuned and iterated during routing, so don't spend too much time here.</p></div></div></div>
+          <h3 class="rules-title"><span class="num">2.5.4</span>Mentor review</h3>
+          <div class="panel reviewer"><p>Before requesting review, check:</p>
+            <ul class="block-steps">
+              <li>Every component is placed on the board.</li>
+              <li>The board is under 100 × 100 mm.</li>
+              <li>Every decoupling cap sits right next to its supply pin.</li>
+              <li>Every via is at the pad-outline distance, including cap and IC GND pad vias.</li>
+              <li>MCU signals fan out without unnecessary crossing (some crossing might be inevitable).</li>
+              <li>No courtyards overlap.</li>
+              <li>Connectors sit on the board edge, facing outward.</li>
+              <li>Test points and the SWD header can be reached with a probe.</li>
+              <li>No silkscreen touches pads or other silkscreen (0.2 mm minimum).</li>
+              <li>NYU, the revision, your initials and all connector labels are added.</li>
+              <li>The 5V and 3V3 LEDs and test points are labelled, and the GND test point has a GND marking.</li>
+              <li>A 3D model shows for every component.</li>
+            </ul>
+            <div class="tasklist"><label><input type="checkbox" data-task="place"><span>Board stackup, shape, footprint layout and 3D view completed</span></label><label><input type="checkbox" data-task="r2"><span>Review 02 completed; placement approved</span></label></div></div>
+        </section>
+        <section id="routing" class="section article" data-section>
+          <div class="section-heading"><span class="kicker">PART 02.6 / ROUTE THE PCB</span><h2><span class="num">2.6</span>Routing workflow</h2><p>Good routing starts with component placement. Solve easy short connections inside each block, then rearrange islands to fine-tune placement as you get a better idea of how much space traces will take.</p></div>
+          <div class="notice"><strong>Watch before you start routing</strong><p>Watch these three before routing. They cover ground planes, stitching vias, differential pairs and trace widths.</p><div class="video-grid compact" data-video-ids="viaGuide,differential,trace"></div></div>
+          <h3 class="rules-title"><span class="num">2.6.1</span>Routing rules</h3>
+          <div class="rules-table"><div><span>STACKUP</span><p><b>F.Cu / GND / PWR / B.Cu</b> · top and bottom for signals. No traces on the GND plane, and you shouldn't need traces on the PWR plane either.</p></div><div><span>WIDTH</span><div><p><b>Make the trace as wide as the pad it connects to.</b> If a trace connects pads of different widths, use the width of the thinner one. (At the signal speeds we work with, wider traces are better, which is why they match the pad width. With very high speed routing such as USB 3.0, memory or display interfaces that you might work on someday, this rule no longer applies.)</p><div class="do-dont"><figure class="source-image dont"><img src="assets/width-dont.png" alt="A trace noticeably thinner than the pad it connects to" loading="lazy"><figcaption><b>Don't:</b> trace thinner than the pad.</figcaption></figure><figure class="source-image do"><img src="assets/width-do.png" alt="A trace exactly as wide as the pad it connects to" loading="lazy"><figcaption><b>Do:</b> trace as wide as the pad.</figcaption></figure></div></div></div><div><span>CLEARANCE</span><p><b>≥0.20 mm preferred</b>; 0.15 mm absolute minimum. Keep adjacent tracks aesthetically evenly spaced.</p></div><div><span>VIA SIZES</span><p><b>0.50/0.25</b> and <b>0.60/0.30</b> for general routing; <b>0.80/0.40+</b> for heavy-current transitions with multiple vias, such as regulator input and output to/from the PWR plane.</p></div><div><span>GND</span><div><p><b>No GND traces.</b> Place a GND via next to each GND pad and leave the pad unconnected. We’ll add a copper pour at the end that connects the vias to the pads.</p><div class="do-dont"><figure class="source-image dont"><img src="assets/gnd-trace-dont.png" alt="A GND pad connected to its via with a copper trace" loading="lazy"><figcaption><b>Don't:</b> trace from the GND pad to the via.</figcaption></figure><figure class="source-image do"><img src="assets/gnd-trace-do.png" alt="A GND via placed near the pad with no trace" loading="lazy"><figcaption><b>Do:</b> via only, the pour connects it later.</figcaption></figure></div></div></div><div><span>POWER</span><div><p><b>Power traces are the same width as the vias.</b> Don’t neck a power trace down to a thin stub when it connects to a via.</p><div class="do-dont"><figure class="source-image dont"><img src="assets/power-width-dont.png" alt="A thin trace connecting a pad to a larger via" loading="lazy"><figcaption><b>Don't:</b> trace thinner than the via.</figcaption></figure><figure class="source-image do"><img src="assets/power-width-do.png" alt="A power trace as wide as the via it connects to" loading="lazy"><figcaption><b>Do:</b> trace as wide as the via.</figcaption></figure></div></div></div><div><span>POWER BETWEEN ISLANDS</span><div><p><b>No power traces between islands.</b> The voltage regulator input and output are filled copper zones on the top layer, connected to the internal power plane with multiple vias. Input capacitors for other components get their power from the internal plane in the same way, not from a trace running from the LDO.</p></div></div></div>
+          <h3 class="rules-title"><span class="num">2.6.2</span>Routing flow</h3>
+          <div class="sequence"><div class="sequence-item"><span>01</span><div><h3>Local routing</h3><p>Finish each island internally: resistor-to-cap, via-to-bypass-to-pin, LED-to-resistor, transceiver power, etc. For regulator input and output, use copper pours on the top layer instead of traces, with solid fill rather than thermal reliefs. Don't link all the major functional blocks yet.</p></div></div><div class="sequence-item"><span>02</span><div><h3>Compact the islands</h3><p>Move entire blocks to shrink wasted space, untangle airwires and balance density. Re-check courtyard/assembly clearances and 3D View.</p></div></div><div class="sequence-item"><span>03</span><div><h3>Global routing</h3><p>Route USB carefully, then CAN, MCU I/O, SPI and power. USB and CAN H/L lines are differential pairs, so route each pair together and keep the two lines 0.2 mm apart from one another. Prefer short paths, a continuous GND reference and consistent spacing. Avoid 90° corners. If a GPIO can be reassigned and doing so makes the routing more even or aesthetic, swap the pins, then update the net labels in the schematic and run <strong>Update PCB from Schematic</strong>.</p></div></div><div class="sequence-item"><span>04</span><div><h3>Teardrops</h3><p>Teardrops widen a trace where it meets a pad or via. This strengthens the connection, so the trace is less likely to crack or break away if the board flexes or a drill is slightly off-center, and it looks cleaner too. Open <strong>Board Setup → Design Rules → Teardrops</strong> and tick the <strong>Curved edges</strong> checkbox for each type of teardrop. Then, in the top menu bar (on Mac), choose <strong>Edit → Edit Teardrops</strong>, click <strong>Apply</strong> and close the dialog. Your traces should now have teardrops.</p></div></div><div class="sequence-item"><span>05</span><div><h3>PWR plane copper pours</h3><p>On In2.Cu, draw a copper pour for each power rail, covering the area where that rail's pins are. Connect every power pad down to its pour with a via. In the zone properties choose <strong>solid</strong> fill instead of thermal reliefs. Refill zones and check that no rail is split into islands.</p></div></div><div class="sequence-item"><span>06</span><div><h3>Ground pours & stitching</h3><p>Fill zones on F.Cu and B.Cu with GND; In1 is continuous GND and In2 the deliberate power plane. Refill all zones and inspect connectivity. Add perimeter/open-area stitching vias at about 4 mm intervals, 0.6/0.3 mm GND vias, respecting drill and edge clearances.</p></div></div><div class="sequence-item"><span>07</span><div><h3>Run DRC</h3><p>Run DRC. The padstack questionable, courtyard incomplete and annular width errors/warnings are fine: they come from minor design errors in the library footprints and are inconsequential. Watch out for unconnected nets, vias connected on only one layer, and clearance errors, and fix those.</p></div></div></div>
+          <h3 class="rules-title"><span class="num">2.6.3</span>Mentor review</h3>
+          <div class="panel reviewer"><p>Before requesting review, check:</p>
+            <ul class="block-steps">
+              <li>Every net is connected, with no unconnected items left.</li>
+              <li>Routing rules are followed.</li>
+              <li>Zones are refilled and there are no shorts.</li>
+              <li>The board looks good in the 3D view.</li>
+              <li>No critical or unexplained DRC errors.</li>
+            </ul>
+            <div class="tasklist"><label><input type="checkbox" data-task="local"><span>Local routing completed; block positions compacted</span></label><label><input type="checkbox" data-task="global"><span>Global routing finished and checked for electrical return paths</span></label><label><input type="checkbox" data-task="r3"><span>Review 03 completed; routing approved</span></label></div></div>
+        </section>
+<section id="fabrication" class="section article" data-section>
+          <div class="section-heading"><span class="kicker">PART 02.7 / FINISH & PREPARE</span><h2><span class="num">2.7</span>Final checks and fabrication</h2></div>
+          <h3 class="rules-title"><span class="num">2.7.1</span>Final checks and fab flow</h3>
+          <div class="sequence"><div class="sequence-item"><span>01</span><div><h3>Silkscreen check</h3><p>All silkscreen was added during placement, so this is only a check. Open <strong>View → 3D Viewer</strong> and confirm that everything (NYU, the revision, connector labels, your initials) is there, readable, and follows the <a href="#rule-silk">silkscreen rules</a>. Don't let silkscreen overlap solder-mask openings.</p></div></div><div class="sequence-item"><span>02</span><div><h3>Run checks that matter</h3><p>ERC then DRC, update board from schematic, verify no unconnected copper, clearances, trace/via sizes, Edge.Cuts and exposed pads. Footprint review: pin 1, polarity, connector mounting and screw-terminal orientation. Inspect power rail continuity; DRC is not a substitute for the datasheet.</p></div></div><div class="sequence-item"><span>03</span><div><h3>Generate manufacturing files</h3><p>Watch the manual export video to learn what Gerbers, Excellon drills, BOM and position files are. In team projects we use <code>generate-fab.sh</code> to automate this; copy the script from a compatible board repo into your practice project and execute it.</p><pre><code># from ~/Desktop/FSAE/FirstLast-Dev-PCB
+find .. -name generate-fab.sh
+cp ../Proteus-PCB/generate-fab.sh ./generate-fab.sh
+chmod +x generate-fab.sh
+./generate-fab.sh
+# Windows Git Bash: bash ./generate-fab.sh if needed</code></pre></div></div><div class="sequence-item"><span>04</span><div><h3>JLCPCB independent check</h3><p>Go to <a href="https://jlcpcb.com/" target="_blank" rel="noopener">JLCPCB</a>, upload the generated Gerber ZIP, choose 4 layers and inspect both front and back in the Gerber viewer. Verify size, holes, mask, silkscreen and orientation. Regenerate fab outputs as needed. Send the reviewed ZIP and repo link to Veikko for the team order after the January 23 team review.</p></div></div></div>
+          <h3 class="rules-title"><span class="num">2.7.2</span>Team review</h3>
+          <p>A team review before ordering is standard industry practice: a fresh set of eyes catches mistakes before they are built into a board. Here, it also shows everyone how many different layout approaches are possible when placement isn't defined by an enclosure or other mechanical requirements. Since the circuits and BOM were predefined, there is no need to prepare beyond briefly explaining your reasoning behind your board size and placement decisions.</p>
+          <div class="panel reviewer"><p>Before the team review, check:</p>
+            <div class="tasklist"><label><input type="checkbox" data-task="rules"><span>All placement and routing rules are followed</span></label><label><input type="checkbox" data-task="stitch"><span>All silkscreen is there, readable in the 3D view, and follows the silkscreen rules</span></label><label><input type="checkbox" data-task="drc"><span>ERC and DRC are clean, apart from the known library footprint warnings, and the board is updated from the schematic</span></label><label><input type="checkbox" data-task="pins"><span>Pin 1, polarity, connector mounting and screw-terminal orientation are checked against the datasheets</span></label><label><input type="checkbox" data-task="zip"><span>The generated fab ZIP opens properly in the JLCPCB Gerber viewer, front and back</span></label><label><input type="checkbox" data-task="r4"><span>Team review completed</span></label></div></div>
+        </section>
+        <div class="part-label" id="assembly"><span class="part-index">PART 03</span><span>ASSEMBLY</span><span class="part-duration">AFTER PCB DELIVERY</span></div>
+        <section class="section article" data-section>
+          <div class="section-heading"><h2><span class="num">3</span>Assembly</h2></div>
+          <div class="notice"><strong>Watch before you start soldering</strong><p>The first video covers surface-mount parts, which go on first. The second covers through-hole parts, which go on last.</p><div class="video-grid compact" data-video-ids="smd,throughHole"></div></div>
+          <h3 class="rules-title"><span class="num">3.1</span>Guidelines</h3>
+          <div class="block-stack">
+            <article class="block-card">
+              <div class="block-head"><h3>Stay safe</h3></div>
+              <p>Soldering irons and hot air can burn you and damage equipment. Use fume extraction, eye protection and ESD-safe handling, and never solder an energized board.</p>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>Check each part before placing it</h3></div>
+              <p>Compare every part with the schematic and the parts checklist before it goes on the board, especially resistor and capacitor values, since many of them look alike.</p>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>Check pin 1 before soldering</h3></div>
+              <p>Symmetrical ICs can go on the board in the wrong orientation, so pin 1 is marked on the PCB with a silkscreen marking, like the dot next to pin 1 in the footprint below. On the package, pin 1 is usually marked with another dot, but it's good to check the datasheet. Line the two up before you solder.</p>
+              <figure class="source-image concept-figure-sm"><img src="assets/pin1-marking.png" alt="A six-pad footprint with a silkscreen dot beside pin 1" loading="lazy"><figcaption>Pin 1 silkscreen marking on a footprint</figcaption></figure>
+            </article>
+            <article class="block-card">
+              <div class="block-head"><h3>Check component polarity</h3></div>
+              <p>Resistors and ceramic capacitors are unpolarized, so they work either way round. Diodes, LEDs, electrolytic caps and ICs are polarized and must go on the right way round. Check the marking on the part against the silkscreen and the datasheet before you solder.</p>
+            </article>
+          </div>
+          <h3 class="rules-title"><span class="num">3.2</span>Assembly flow</h3>
+          <div class="sequence"><div class="sequence-item"><span>01</span><div><h3>Prepare the station</h3><p>ESD mat and strap as available, good ventilation/fume extraction, solder paste, hot air station, temperature-controlled iron, fine solder, flux, tweezers, magnification, wick, multimeter. Learn pad/pin orientation, solder-mask and flux behavior. Start with practice 0603s if needed. Since the minimum order quantity (MOQ) for PCBs is five and we have plenty of excess SMD components, you can practice as much as you want first.</p></div></div><div class="sequence-item"><span>02</span><div><h3>Solder the SMD components first</h3><p>We'll likely use solder paste and a hot air station. The makerspace also has a reflow oven, so we may use that method instead in the spring if it's accessible to us. Start with the low parts: 0603/0805 passives and SOT-23/SOT-223, then SOIC-8 and LQFP-48, and wick away any bridges. USB-C inner contacts may need extra heat or mentor help.</p></div></div><div class="sequence-item"><span>03</span><div><h3>Solder the through-hole components last</h3><p>Once every SMD part is on, solder the through-hole parts, such as the screw terminals and headers, with the iron. Doing them last keeps their bulk out of the way while you work on the small parts.</p></div></div><div class="sequence-item"><span>04</span><div><h3>Inspect and test continuity</h3><p>Look for bridges, cold joints, tombstoned passives, rotated ICs, wrong pin 1. Confirm GND ↔ 5 V and GND ↔ 3.3 V are not shorted before power. Check LDO input/output pinout and capacitor polarity if applicable.</p></div></div></div>
+          <h3 class="rules-title"><span class="num">3.3</span>Before power-up</h3>
+          <div class="panel reviewer"><p>Before moving on, check:</p>
+            <ul class="block-steps">
+              <li>No solder bridges, cold joints, tombstoned passives or rotated ICs.</li>
+              <li>Pin 1 is correct on every IC.</li>
+              <li>GND is not shorted to 5 V or to 3.3 V.</li>
+              <li>The LDO pinout and capacitor polarity are correct.</li>
+            </ul>
+            <div class="tasklist"><label><input type="checkbox" data-task="assembly"><span>Board soldered, inspected and rail shorts ruled out</span></label></div></div>
+        </section>
+        <div class="part-label" id="bringup"><span class="part-index">PART 04</span><span>BRING-UP</span><span class="part-duration">AFTER ASSEMBLY</span></div>
+        <section class="section article" data-section>
+          <div class="section-heading"><h2><span class="num">4</span>Bring-up</h2><p>Instructions will be added in late January, when this becomes topical.</p></div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
