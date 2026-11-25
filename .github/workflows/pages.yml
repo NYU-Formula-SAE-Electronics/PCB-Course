@@ -16,11 +16,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  # Upload and publish run as separate jobs (GitHub's own Pages template does
+  # this). In one job, deploy-pages sometimes looked up the artifact before it
+  # was visible and failed with "No artifacts named github-pages".
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -36,5 +36,12 @@ jobs:
         with:
           path: _site
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
